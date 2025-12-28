@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>📊 Advanced Income & Expense Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script src="https://pl28343252.effectivegatecpm.com/b0/32/35/b0323521ab92aa35ff4ce77822b78adc.js"></script>
+    <script src="https://pl28344759.effectivegatecpm.com/eb/25/40/eb25401554277dcd898bb0414f0023b0.js"></script>
+
+    <style>
+        /* မူလဒီဇိုင်းများ အားလုံး အတူတူပင်ဖြစ်သည် */
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; min-height: 100vh; padding-bottom: 80px; }
+        .app-header { background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d); color: white; padding: 20px; display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .profile-photo { width: 55px; height: 55px; border-radius: 50%; background: rgba(255,255,255,0.2); border: 2px solid white; display: flex; align-items: center; justify-content: center; font-size: 28px; }
+        .tabs { display: flex; background: white; position: sticky; top: 0; z-index: 1000; overflow-x: auto; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .tab { flex: 1; min-width: 80px; padding: 12px 5px; text-align: center; cursor: pointer; background: white; border: none; font-size: 11px; font-weight: bold; color: #777; transition: 0.3s; border-bottom: 3px solid transparent; }
+        .tab.active { color: #b21f1f; border-bottom-color: #b21f1f; background: #fff5f5; }
+        .tab-icon { display: block; font-size: 20px; margin-bottom: 3px; }
+        .content { padding: 15px; }
+        .page { display: none; }
+        .page.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .card { background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 15px; border: 1px solid #eee; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 6px; font-weight: 600; color: #444; font-size: 13px; }
+        input, select { width: 100%; padding: 12px; border: 1.5px solid #ddd; border-radius: 10px; font-size: 15px; outline: none; }
+        .btn { width: 100%; padding: 14px; background: linear-gradient(135deg, #1a2a6c, #b21f1f); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 16px; box-shadow: 0 4px 15px rgba(178, 31, 31, 0.3); }
+        .balance-hero { background: linear-gradient(135deg, #1a2a6c, #b21f1f); color: white; padding: 30px 20px; border-radius: 20px; text-align: center; margin-bottom: 20px; }
+        .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .stat-box { padding: 15px; border-radius: 12px; text-align: center; font-weight: bold; }
+        .stat-inc { background: #e8f5e9; color: #2e7d32; }
+        .stat-exp { background: #ffebee; color: #c62828; }
+        .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.75); z-index:10000; justify-content:center; align-items:center; }
+        .modal-content { background:white; width:90%; border-radius:20px; padding:25px; text-align:center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .done-btn { background: #4CAF50; color: white; border: none; padding: 12px 30px; border-radius: 25px; font-weight: bold; margin-top: 15px; width: 100%; cursor: pointer; }
+        .ad-slot-box { margin: 15px 0; min-height: 120px; background: #f9f9f9; border-radius: 10px; border: 1px dashed #ccc; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .btn-link { display: block; width: 100%; padding: 14px; text-align: center; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 16px; margin-top: 10px; border: none; cursor: pointer; }
+        .btn-yapp { background: #fdbb2d; color: #1a2a6c; }
+        .btn-share { background: #1a2a6c; color: white; }
+    </style>
+</head>
+<body onclick="initBackControl()">
+
+    <div class="app-header">
+        <div class="profile-photo">👤</div>
+        <div>
+            <div id="headName" style="font-weight: bold; font-size: 18px;">User Name</div>
+            <div id="headCode" style="font-size: 12px; opacity: 0.9;">CODE: EMP001</div>
+        </div>
+    </div>
+
+    <div class="tabs">
+        <div class="tab active" onclick="showPage('income', this)"><span class="tab-icon">💰</span><span>ဝင်ငွေ</span></div>
+        <div class="tab" onclick="showPage('expense', this)"><span class="tab-icon">💸</span><span>ထွက်ငွေ</span></div>
+        <div class="tab" onclick="showPage('history', this)"><span class="tab-icon">📜</span><span>မှတ်တမ်း</span></div>
+        <div class="tab" onclick="showPage('weekly', this)"><span class="tab-icon">📅</span><span>15ရက်</span></div>
+        <div class="tab" onclick="showPage('balance', this)"><span class="tab-icon">🧮</span><span>လက်ကျန်</span></div>
+        <div class="tab" onclick="showPage('graph', this)"><span class="tab-icon">📊</span><span>ဂရပ်</span></div>
+        <div class="tab" onclick="showPage('profile', this)"><span class="tab-icon">👤</span><span>Profile</span></div>
+    </div>
+
+    <div class="content">
+        <div id="income" class="page active">
+            <div class="card">
+                <div class="form-group"><label>📅 ရက်စွဲ</label><input type="date" id="iDate"></div>
+                <div class="form-group"><label>⏰ အလုပ်ချိန် (နာရီ)</label><input type="number" id="iHours" value="8"></div>
+                <div class="form-group"><label>⏱️ OT (နာရီ)</label><input type="number" id="iOt" value="0"></div>
+                <div class="form-group"><label>📅 ရက်မှန်ကြေး</label><input type="number" id="iBonus" value="0"></div>
+                <div class="form-group"><label>💵 အပိုဝင်ငွေ</label><input type="number" id="iExtra" value="0"></div>
+                <button class="btn" onclick="saveData('income')">💾 သိမ်းမည်</button>
+            </div>
+        </div>
+
+        <div id="expense" class="page">
+            <div class="card">
+                <div class="form-group"><label>📅 ရက်စွဲ</label><input type="date" id="eDate"></div>
+                <div class="form-group">
+                    <label>📂 အမျိုးအစား</label>
+                    <select id="eCat" onchange="checkCustom(this.value)">
+                        <option value="အိမ်လခ">🏠 အိမ်လခ</option>
+                        <option value="ခရီးစရိတ်">🚗 ခရီးစရိတ်</option>
+                        <option value="မုန့်ဖိုး">🍜 မုန့်ဖိုး</option>
+                        <option value="အထွေထွေ">📦 အထွေထွေ</option>
+                        <option value="custom">➕ အခြား</option>
+                    </select>
+                    <input type="text" id="customCat" placeholder="..." style="display:none; margin-top:10px;">
+                </div>
+                <div class="form-group"><label>💵 ပမာဏ</label><input type="number" id="eAmount"></div>
+                <button class="btn" onclick="saveData('expense')">💾 သိမ်းမည်</button>
+            </div>
+        </div>
+
+        <div id="history" class="page"><div id="historyList"></div></div>
+        <div id="weekly" class="page">
+            <button class="btn" style="background: #333; margin-bottom:15px;" onclick="clearAll()">🗑️ စာရင်းအားလုံးဖျက်မည်</button>
+            <div id="weeklyList"></div>
+        </div>
+        <div id="balance" class="page">
+            <div class="balance-hero">
+                <div>လက်ကျန်ငွေ စုစုပေါင်း</div>
+                <h1 id="totalBal" style="font-size: 48px; margin: 5px 0;">0฿</h1>
+                <div id="workDayShow" style="font-size: 14px; background: rgba(0,0,0,0.2); display: inline-block; padding: 5px 15px; border-radius: 20px;">အလုပ်ဆင်းရက်: 0 ရက်</div>
+            </div>
+            <div class="stats-row">
+                <div class="stat-box stat-inc">ဝင်ငွေ<div id="totalInc">0฿</div></div>
+                <div class="stat-box stat-exp">ထွက်ငွေ<div id="totalExp">0฿</div></div>
+            </div>
+        </div>
+        <div id="graph" class="page"><div class="card" style="min-height: 300px;"><canvas id="myChart"></canvas></div></div>
+        <div id="profile" class="page">
+            <div class="card">
+                <div class="form-group"><label>အမည်</label><input type="text" id="pName"></div>
+                <div class="form-group"><label>ကုတ်နံပါတ်</label><input type="text" id="pCode"></div>
+                <div class="form-group"><label>တနေ့လုပ်အားခ</label><input type="number" id="pWage"></div>
+                <div class="form-group"><label>OT နာရီခ</label><input type="number" id="pOt"></div>
+                <button class="btn" onclick="saveProfile()">💾 သိမ်းမည်</button>
+                <a href="https://daily-y-app.github.io/Apk-downlode/" class="btn-link btn-yapp">📥 Y App (Website)</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <div style="font-size: 50px; color: #4CAF50;">✅</div>
+            <h2>သိမ်းဆည်းပြီးပါပြီ</h2>
+            <div class="ad-slot-box">
+                <script async="async" data-cfasync="false" src="https://pl28343177.effectivegatecpm.com/0c2b6d3f941113823d5379a543284bf7/invoke.js"></script>
+                <div id="container-0c2b6d3f941113823d5379a543284bf7"></div>
+            </div>
+            <button class="done-btn" onclick="closeModal('successModal')">DONE</button>
+        </div>
+    </div>
+
+    <div id="exitModal" class="modal">
+        <div class="modal-content">
+            <h2 style="color: #b21f1f;">ထွက်မှာ သေချာပါသလား?</h2>
+            <div class="ad-slot-box">
+                <script async="async" data-cfasync="false" src="https://pl28343177.effectivegatecpm.com/0c2b6d3f941113823d5379a543284bf7/invoke.js"></script>
+                <div id="container-0c2b6d3f941113823d5379a543284bf7-exit"></div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="done-btn" style="background: #f44336; flex:1;" onclick="reallyExit()">ထွက်မည်</button>
+                <button class="done-btn" style="background: #888; flex:1;" onclick="closeModal('exitModal')">မထွက်ပါ</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data သိမ်းဆည်းရန်အတွက် ပိုမိုခိုင်မာသော စနစ်
+        let records = [];
+        try {
+            records = JSON.parse(localStorage.getItem('f_recs')) || [];
+        } catch(e) { records = []; }
+        
+        let profile = { name:'User', code:'EMP001', wage:375, ot:69 };
+        try {
+            let savedProf = JSON.parse(localStorage.getItem('f_prof'));
+            if(savedProf) profile = savedProf;
+        } catch(e) { }
+
+        let chart = null;
+
+        // Back Button Control
+        function initBackControl() {
+            if (window.history.state?.step !== 1) {
+                window.history.pushState({step: 1}, "");
+                window.history.pushState({step: 2}, "");
+            }
+        }
+        window.onpopstate = function() {
+            document.getElementById('exitModal').style.display = 'flex';
+            window.history.pushState({step: 2}, "");
+        };
+        function reallyExit() {
+            window.onpopstate = null;
+            window.location.replace("about:blank");
+        }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        function showPage(id, btn) {
+            document.querySelectorAll('.page, .tab').forEach(el => el.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if(btn) btn.classList.add('active');
+            if(id === 'balance') updateBalance();
+            if(id === 'history') renderList('historyList', records);
+            if(id === 'weekly') renderList('weeklyList', records);
+        }
+
+        function saveData(type) {
+            const date = document.getElementById(type==='income'?'iDate':'eDate').value;
+            if(!date) return alert("ရက်စွဲရွေးပါ");
+            let amt = 0, cat = "";
+            if(type === 'income') {
+                const h = parseFloat(document.getElementById('iHours').value)||0;
+                const ot = parseFloat(document.getElementById('iOt').value)||0;
+                const b = parseFloat(document.getElementById('iBonus').value)||0;
+                const ex = parseFloat(document.getElementById('iExtra').value)||0;
+                amt = (h/8 * profile.wage) + (ot * profile.ot) + b + ex;
+                cat = "ဝင်ငွေ";
+            } else {
+                amt = parseFloat(document.getElementById('eAmount').value)||0;
+                cat = document.getElementById('eCat').value === 'custom' ? document.getElementById('customCat').value : document.getElementById('eCat').value;
+            }
+            records.push({ id:Date.now(), type, date, amt, category:cat });
+            
+            // LocalStorage ထဲ သေချာထည့်ခြင်း
+            try {
+                localStorage.setItem('f_recs', JSON.stringify(records));
+                document.getElementById('successModal').style.display = 'flex';
+            } catch(e) {
+                alert("Data သိမ်းဆည်းရန် Error ဖြစ်နေပါသည်။ WebView Setting ကို ပြန်စစ်ပါ။");
+            }
+        }
+
+        function updateBalance() {
+            const inc = records.filter(r=>r.type==='income').reduce((a,b)=>a+b.amt, 0);
+            const exp = records.filter(r=>r.type==='expense').reduce((a,b)=>a+b.amt, 0);
+            document.getElementById('totalBal').innerText = (inc - exp).toFixed(0) + '฿';
+            document.getElementById('totalInc').innerText = inc.toFixed(0) + '฿';
+            document.getElementById('totalExp').innerText = exp.toFixed(0) + '฿';
+        }
+
+        function renderList(target, data) {
+            const div = document.getElementById(target); div.innerHTML = "";
+            data.sort((a,b)=>new Date(b.date)-new Date(a.date)).forEach(r => {
+                const isInc = r.type==='income';
+                div.innerHTML += `<div class="card" style="display:flex; justify-content:space-between; align-items:center; border-left:5px solid ${isInc?'#4CAF50':'#F44336'}">
+                    <div><b>${r.date}</b><br><small>${r.category}</small></div>
+                    <div style="text-align:right; color:${isInc?'#4CAF50':'#F44336'}; font-weight:bold;">${isInc?'+':'-'}${r.amt.toFixed(0)}฿
+                    <br><button onclick="delRec(${r.id})" style="background:none; border:none; color:#ccc;">🗑️</button></div></div>`;
+            });
+        }
+
+        function delRec(id) {
+            if(confirm("ဖျက်မှာလား?")) {
+                records = records.filter(r=>r.id!==id);
+                localStorage.setItem('f_recs', JSON.stringify(records));
+                updateBalance();
+                renderList('historyList', records);
+            }
+        }
+
+        function saveProfile() {
+            profile = { 
+                name: document.getElementById('pName').value, 
+                code: document.getElementById('pCode').value, 
+                wage: document.getElementById('pWage').value, 
+                ot: document.getElementById('pOt').value 
+            };
+            localStorage.setItem('f_prof', JSON.stringify(profile));
+            document.getElementById('headName').innerText = profile.name;
+            document.getElementById('headCode').innerText = "CODE: " + profile.code;
+            alert("ကိုယ်ရေးအချက်အလက် သိမ်းပြီးပါပြီ");
+        }
+
+        function clearAll() {
+            if(confirm("အကုန်ဖျက်မှာလား?")) {
+                records = [];
+                localStorage.setItem('f_recs', '[]');
+                renderList('weeklyList', []);
+            }
+        }
+
+        window.onload = () => {
+            document.getElementById('iDate').valueAsDate = new Date();
+            document.getElementById('eDate').valueAsDate = new Date();
+            document.getElementById('pName').value = profile.name;
+            document.getElementById('pCode').value = profile.code;
+            document.getElementById('pWage').value = profile.wage;
+            document.getElementById('pOt').value = profile.ot;
+            document.getElementById('headName').innerText = profile.name;
+            document.getElementById('headCode').innerText = "CODE: " + profile.code;
+            initBackControl();
+        };
+    </script>
+</body>
+</html>
