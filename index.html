@@ -10,7 +10,6 @@
     <script src="https://pl28344759.effectivegatecpm.com/eb/25/40/eb25401554277dcd898bb0414f0023b0.js"></script>
 
     <style>
-        /* မူလဒီဇိုင်းများ အားလုံး အတူတူပင်ဖြစ်သည် */
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; min-height: 100vh; padding-bottom: 80px; }
         .app-header { background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d); color: white; padding: 20px; display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
@@ -33,16 +32,15 @@
         .stat-box { padding: 15px; border-radius: 12px; text-align: center; font-weight: bold; }
         .stat-inc { background: #e8f5e9; color: #2e7d32; }
         .stat-exp { background: #ffebee; color: #c62828; }
-        .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.75); z-index:10000; justify-content:center; align-items:center; }
-        .modal-content { background:white; width:90%; border-radius:20px; padding:25px; text-align:center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:10000; justify-content:center; align-items:center; }
+        .modal-content { background:white; width:90%; border-radius:20px; padding:25px; text-align:center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
         .done-btn { background: #4CAF50; color: white; border: none; padding: 12px 30px; border-radius: 25px; font-weight: bold; margin-top: 15px; width: 100%; cursor: pointer; }
         .ad-slot-box { margin: 15px 0; min-height: 120px; background: #f9f9f9; border-radius: 10px; border: 1px dashed #ccc; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .btn-link { display: block; width: 100%; padding: 14px; text-align: center; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 16px; margin-top: 10px; border: none; cursor: pointer; }
         .btn-yapp { background: #fdbb2d; color: #1a2a6c; }
-        .btn-share { background: #1a2a6c; color: white; }
     </style>
 </head>
-<body onclick="initBackControl()">
+<body onclick="initBackLogic()">
 
     <div class="app-header">
         <div class="profile-photo">👤</div>
@@ -98,6 +96,7 @@
             <button class="btn" style="background: #333; margin-bottom:15px;" onclick="clearAll()">🗑️ စာရင်းအားလုံးဖျက်မည်</button>
             <div id="weeklyList"></div>
         </div>
+
         <div id="balance" class="page">
             <div class="balance-hero">
                 <div>လက်ကျန်ငွေ စုစုပေါင်း</div>
@@ -109,7 +108,13 @@
                 <div class="stat-box stat-exp">ထွက်ငွေ<div id="totalExp">0฿</div></div>
             </div>
         </div>
-        <div id="graph" class="page"><div class="card" style="min-height: 300px;"><canvas id="myChart"></canvas></div></div>
+
+        <div id="graph" class="page">
+            <div class="card" style="min-height: 350px;">
+                <canvas id="myChart"></canvas>
+            </div>
+        </div>
+
         <div id="profile" class="page">
             <div class="card">
                 <div class="form-group"><label>အမည်</label><input type="text" id="pName"></div>
@@ -149,7 +154,6 @@
     </div>
 
     <script>
-        // Data သိမ်းဆည်းရန်အတွက် ပိုမိုခိုင်မာသော စနစ်
         let records = [];
         try {
             records = JSON.parse(localStorage.getItem('f_recs')) || [];
@@ -161,10 +165,9 @@
             if(savedProf) profile = savedProf;
         } catch(e) { }
 
-        let chart = null;
+        let myChart = null;
 
-        // Back Button Control
-        function initBackControl() {
+        function initBackLogic() {
             if (window.history.state?.step !== 1) {
                 window.history.pushState({step: 1}, "");
                 window.history.pushState({step: 2}, "");
@@ -187,6 +190,35 @@
             if(id === 'balance') updateBalance();
             if(id === 'history') renderList('historyList', records);
             if(id === 'weekly') renderList('weeklyList', records);
+            if(id === 'graph') updateGraph(); // ဂရပ်ကို စာမျက်နှာဖွင့်တိုင်း Update လုပ်မည်
+        }
+
+        // ဂရပ်ရေးဆွဲသည့် Function
+        function updateGraph() {
+            const ctx = document.getElementById('myChart').getContext('2d');
+            const income = records.filter(r => r.type === 'income').reduce((a, b) => a + b.amt, 0);
+            const expense = records.filter(r => r.type === 'expense').reduce((a, b) => a + b.amt, 0);
+
+            if (myChart) myChart.destroy(); // ဂရပ်အဟောင်းရှိရင် ဖျက်ပြီး အသစ်ပြန်ဆွဲမည်
+
+            myChart = new Chart(ctx, {
+                type: 'doughnut', // Doughnut ပုံစံ ဂရပ်
+                data: {
+                    labels: ['ဝင်ငွေ', 'ထွက်ငွေ'],
+                    datasets: [{
+                        data: [income, expense],
+                        backgroundColor: ['#4CAF50', '#F44336'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
         }
 
         function saveData(type) {
@@ -205,14 +237,8 @@
                 cat = document.getElementById('eCat').value === 'custom' ? document.getElementById('customCat').value : document.getElementById('eCat').value;
             }
             records.push({ id:Date.now(), type, date, amt, category:cat });
-            
-            // LocalStorage ထဲ သေချာထည့်ခြင်း
-            try {
-                localStorage.setItem('f_recs', JSON.stringify(records));
-                document.getElementById('successModal').style.display = 'flex';
-            } catch(e) {
-                alert("Data သိမ်းဆည်းရန် Error ဖြစ်နေပါသည်။ WebView Setting ကို ပြန်စစ်ပါ။");
-            }
+            localStorage.setItem('f_recs', JSON.stringify(records));
+            document.getElementById('successModal').style.display = 'flex';
         }
 
         function updateBalance() {
@@ -253,7 +279,7 @@
             localStorage.setItem('f_prof', JSON.stringify(profile));
             document.getElementById('headName').innerText = profile.name;
             document.getElementById('headCode').innerText = "CODE: " + profile.code;
-            alert("ကိုယ်ရေးအချက်အလက် သိမ်းပြီးပါပြီ");
+            alert("ကိုယ်ရေးအချက်အလက် သိမ်းပြီးပါပြီ။");
         }
 
         function clearAll() {
@@ -273,7 +299,6 @@
             document.getElementById('pOt').value = profile.ot;
             document.getElementById('headName').innerText = profile.name;
             document.getElementById('headCode').innerText = "CODE: " + profile.code;
-            initBackControl();
         };
     </script>
 </body>
