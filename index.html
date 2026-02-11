@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Y Apps - Y APK Store</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <script type='text/javascript' src='https://pl28344759.effectivegatecpm.com/eb/25/40/eb25401554277dcd898bb0414f0023b0.js'></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; color: #333; line-height: 1.6; scroll-behavior: smooth; }
+        
+        /* ခေါင်းစီးပိုင်း ပြင်ဆင်ချက် */
+        header { 
+            background: #1a237e; /* ပုံမပေါ်ခင် နောက်ခံအရောင် */
+            position: relative;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-banner {
+            background: url('https://i.postimg.cc/XJ9PGwq7/1080x250yapp.png');
+            background-size: contain; /* ပုံအပြည့်ပေါ်စေရန် */
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 90px; /* သင်အလိုရှိသော အမြင့် */
+            width: 100%;
+        }
+        
+        /* Menu ကို ပုံအောက်မှာ သီးသန့်ထားခြင်း */
+        nav { 
+            background: #3f51b5; 
+            padding: 8px 0;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .nav-links { 
+            display: flex; gap: 10px; list-style: none; align-items: center; 
+        }
+        .nav-links a { 
+            color: white; text-decoration: none; font-size: 12px; padding: 6px 12px; border-radius: 15px; 
+            background: rgba(255, 255, 255, 0.1); transition: 0.3s;
+        }
+        .nav-links a.active { background: #1a237e; font-weight: bold; }
+        
+        .lang-select { 
+            background: #1a237e; color: white; border: 1px solid rgba(255,255,255,0.3); 
+            padding: 3px; border-radius: 5px; font-size: 11px; outline: none;
+        }
+
+        .container { max-width: 300px; margin: 20px auto; padding: 10px; } 
+        .app-card, .about-section { background: white; border-radius: 20px; padding: 20px; text-align: center; box-shadow: 0 8px 20px rgba(0,0,0,0.08); margin-bottom: 25px; }
+        .apk-icon-circle { width: 90px; height: 90px; background: white; border-radius: 18px; margin: 0 auto 15px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05); display: flex; justify-content: center; align-items: center; }
+        .app-icon { width: 100%; height: 100%; object-fit: cover; }
+        
+        .download-btn { background: linear-gradient(135deg, #28a745, #218838); color: white; padding: 12px; border-radius: 30px; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: bold; cursor: pointer; border: none; width: 100%; }
+        .share-btn { background: #fff; color: #007bff; border: 1px solid #007bff; padding: 10px; border-radius: 30px; margin-top: 10px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; font-size: 14px; }
+
+        footer { background: #1a237e; color: white; text-align: center; padding: 30px 20px; margin-top: 40px; }
+        
+        #adOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; color: white; text-align: center; padding-top: 100px; }
+        .loader { border: 5px solid #f3f3f3; border-top: 5px solid #3498db; border-radius: 50%; width: 50px; height: 50px; animation: spin 2s linear infinite; margin: 20px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <div id="adOverlay">
+        <h2 id="ad-header">Preparing your download...</h2>
+        <p>Please wait <span id="timer">5</span> seconds...</p>
+        <div class="loader"></div>
+    </div>
+
+    <header>
+        <div class="header-banner"></div>
+        
+        <nav>
+            <ul class="nav-links">
+                <li><a href="#home" class="tab-link active" onclick="setActive(this)" id="nav-home"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="#about" class="tab-link" onclick="setActive(this)" id="nav-about"><i class="fas fa-info-circle"></i> About</a></li>
+                <li>
+                    <select class="lang-select" onchange="changeLanguage(this.value)">
+                        <option value="my">🇲🇲 မြန်မာ</option>
+                        <option value="en">🇺🇸 EN</option>
+                        <option value="th">🇹🇭 ไทย</option>
+                    </select>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container" id="home">
+        <div class="app-card">
+            <div class="apk-icon-circle">
+                <img src="https://i.postimg.cc/mrKY1fwZ/1024x1024.png" class="app-icon">
+            </div>
+            <h2 class="title-app1">Daily Wage</h2>
+            <p class="desc-app1" style="font-size: 12px; margin-bottom: 10px;">နေ့စဉ်ဝင်ငွေထွက်ငွေ တွက်ချက်ရန်။</p>
+            <button onclick="handleDownload('https://github.com/daily-Y-App/Apk-downlode/releases/download/V6/daily-wage.apk')" class="download-btn">
+                <i class="fas fa-cloud-arrow-down"></i> <span class="dl-text-ui">Download APK</span>
+            </button>
+        </div>
+
+        <div class="app-card">
+            <div class="apk-icon-circle">
+                <img src="https://i.postimg.cc/1z6HBp6M/file-000000007f74720bbf2c5fb63e13f835.png" class="app-icon">
+            </div>
+            <h2 class="title-app2">လုပ်ဆောင်နေဆဲ...</h2>
+            <p class="desc-app2" style="font-size: 12px; margin-bottom: 10px;">နောက်ထပ် APK အသစ်အတွက် နေရာ။</p>
+            <button onclick="handleDownload('#')" class="download-btn">
+                <i class="fas fa-cloud-arrow-down"></i> <span class="dl-text-ui">Download APK</span>
+            </button>
+        </div>
+
+        <button class="share-btn" onclick="shareWebsite()">
+            <i class="fas fa-share-nodes"></i> <span id="share-text">Share Website</span>
+        </button>
+
+        <div id="about" class="about-section">
+            <h2 id="about-title">About Y Apps</h2>
+            <p id="about-text" style="font-size: 13px; margin-top: 10px;">
+                Y Apps သည် အသုံးဝင်သော Android Applications များကို အခမဲ့ ပေးထားပါသည်။
+            </p>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 Y Apps</p>
+        <p style="font-size: 12px; opacity: 0.7;">Contact: 0618201594</p>
+    </footer>
+
+    <script>
+        function setActive(element) {
+            document.querySelectorAll('.tab-link').forEach(link => link.classList.remove('active'));
+            element.classList.add('active');
+        }
+
+        function handleDownload(apkLink) {
+            if(apkLink === '#') return;
+            var script = document.createElement('script');
+            script.src = "https://pl28343252.effectivegatecpm.com/b0/32/35/b0323521ab92aa35ff4ce77822b78adc.js";
+            document.body.appendChild(script);
+
+            var overlay = document.getElementById('adOverlay');
+            var timerDisplay = document.getElementById('timer');
+            var timeLeft = 5; 
+            overlay.style.display = "block";
+
+            var countdown = setInterval(function() {
+                timeLeft--;
+                timerDisplay.innerText = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                    overlay.style.display = "none";
+                    window.location.href = apkLink;
+                }
+            }, 1000);
+        }
+
+        function shareWebsite() {
+            var shareUrl = "https://daily-y-app.github.io/Apk-downlode/";
+            if (navigator.share) {
+                navigator.share({ title: 'Y Apps', url: shareUrl });
+            } else {
+                alert("Link copied!");
+            }
+        }
+
+        function changeLanguage(lang) {
+            if (lang === 'my') { location.reload(); return; }
+            const content = {
+                en: { navH: "Home", navA: "About", t2: "Coming Soon...", dl: "Download", share: "Share Website", abT: "About Y Apps" },
+                th: { navH: "หน้าหลัก", navA: "เกี่ยวกับ", t2: "เร็วๆ นี้...", dl: "ดาวน์โหลด", share: "แชร์เว็บ", abT: "เกี่ยวกับเรา" }
+            };
+            document.getElementById('nav-home').innerHTML = '<i class="fas fa-home"></i> ' + content[lang].navH;
+            document.getElementById('nav-about').innerHTML = '<i class="fas fa-info-circle"></i> ' + content[lang].navA;
+            document.querySelector('.title-app2').innerText = content[lang].t2;
+            document.querySelectorAll('.dl-text-ui').forEach(el => el.innerText = content[lang].dl);
+            document.getElementById('share-text').innerText = content[lang].share;
+            document.getElementById('about-title').innerText = content[lang].abT;
+        }
+    </script>
+</body>
+</html>
+
